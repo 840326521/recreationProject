@@ -1,0 +1,91 @@
+.scroll-view {
+  height: 100vh;
+  background-color: orange;
+  position: fixed;
+  .van-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0);
+  }
+  .scroll-view-title {
+    padding-top: 20PX;
+    text-align: center;
+    font-size: 24PX;
+  }
+  .scroll-view-content {
+    margin: 2.5%;
+    padding: 2.5%;
+    border-radius: 20PX;
+    box-shadow: 0 2PX 4PX rgb(0 0 0 / 20%);
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+  .ActionSheet {
+    font-size: 18PX;
+    color: white;
+    padding-bottom: 20PX;
+    background-color: #292a2d;
+    .ActionSheet-content {
+      .ActionSheet-content-bgColor {
+        height: 50PX;
+        display: flex;
+        justify-content: space-evenly;
+        align-items: center;
+        .ActionSheet-content-bgColor-c {
+          display: flex;
+          justify-content: space-evenly;
+          align-items: center;
+          width: 80%;
+          .van-button--small {
+            min-width: 30%;
+            min-height: 40PX;
+            height: 40PX;
+            line-height: 40PX;
+          }
+          .ActionSheet-content-bgColor-c-i {
+            width: 30PX;
+            height: 30PX;
+            border-radius: 50%;
+          }
+          .selectend {
+            border: 1PX solid #1CBB9A;
+            &::after {
+              width: 30PX;
+              height: 30PX;
+              line-height: 30PX;
+              text-align: center;
+              content: "√";
+              color: #1CBB9A;
+              display: block;
+            }
+          }
+          .btn {
+            font-size: 16PX;
+            background-color: #202124;
+            color: white;
+            border: 1PX solid #202124;
+          }
+        }
+        .radius-view {
+          width: 40PX;
+          height: 40PX;
+          color: white;
+          line-height: 40PX;
+          text-align: center;
+          border-radius: 50%;
+          background-color: rgba(0, 0, 0, 0.5);
+        }
+      }
+    }
+    .van-action-sheet__header {
+      font-size: 20PX;
+      line-height: 60PX;
+    }
+    .van-action-sheet__close {
+      font-size: 24PX !important;
+      padding-right: 20PX;
+    }
+  }
+}

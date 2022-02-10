@@ -1,0 +1,31 @@
+@fontSize: 16PX;
+.pWH_per (@w, @h) {
+  width: percentage(@w);
+  height: percentage(@h);
+}
+
+.pWH_v {
+  width: 100vw;
+  height: 100vh;
+}
+
+.xy_center {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+}
+
+.roll(@isShow:none) {
+  &::-webkit-scrollbar {
+    width: 6PX;
+    display: @isShow;
+  }
+  &::-webkit-scrollbar-thumb {
+    /*滚动条里面小方块*/
+    border-radius: 20PX;
+    background-color: #282c34;
+  }
+}

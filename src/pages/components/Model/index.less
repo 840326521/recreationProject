@@ -1,0 +1,28 @@
+@import (reference) "@/styles/global/global.less";
+.modal-box {
+  .pWH_per(1, 1);
+  position: fixed;
+  top: 0;
+  z-index: 1000;
+  .modal-box-bg {
+    .pWH_per(1, 1);
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+  .modal-box-content {
+    .pWH_per(0.75, 0.5);
+    overflow: auto;
+    .xy_center();
+    text-indent: 40PX;
+    color: white;
+    font-size: @fontSize;
+    padding: 20PX;
+    padding-right: 15PX;
+    box-sizing: border-box;
+    background-color: #101011;
+    border-radius: 20PX;
+    #content_id {
+      .pWH_per(1, 1);
+      // .roll();
+    }
+  }
+}
