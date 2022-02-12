@@ -1,7 +1,7 @@
 .scroll-view {
   height: 100vh;
-  background-color: orange;
   position: fixed;
+  transition: all 0.5s;
   .van-overlay {
     position: fixed;
     top: 0;
@@ -19,8 +19,8 @@
     margin: 2.5%;
     padding: 2.5%;
     border-radius: 20PX;
-    box-shadow: 0 2PX 4PX rgb(0 0 0 / 20%);
-    background-color: rgba(0, 0, 0, 0.5);
+    // box-shadow: 0 2PX 4PX rgb(0 0 0 / 20%);
+    // background-color: rgba(0, 0, 0, 0.5);
   }
   .ActionSheet {
     font-size: 18PX;
@@ -28,15 +28,21 @@
     padding-bottom: 20PX;
     background-color: #292a2d;
     .ActionSheet-content {
+      height: 30vh;
+      overflow: auto;
+      padding: 0 5%;
+      .buttonStyle {
+        height: 100PX;
+        flex-wrap: wrap;
+      }
       .ActionSheet-content-bgColor {
-        height: 50PX;
+        min-height: 60PX;
         display: flex;
         justify-content: space-evenly;
         align-items: center;
         .ActionSheet-content-bgColor-c {
           display: flex;
-          justify-content: space-evenly;
-          align-items: center;
+          justify-content: space-between;
           width: 80%;
           .van-button--small {
             min-width: 30%;
@@ -50,14 +56,14 @@
             border-radius: 50%;
           }
           .selectend {
-            border: 1PX solid #1CBB9A;
+            border: 1PX solid #1cbb9a;
             &::after {
               width: 30PX;
               height: 30PX;
               line-height: 30PX;
               text-align: center;
               content: "√";
-              color: #1CBB9A;
+              color: #1cbb9a;
               display: block;
             }
           }

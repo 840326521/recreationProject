@@ -3,38 +3,43 @@ import { TypeDetailData } from "@/src_types"
 import { request, skip, throttle } from "@utils"
 import { ScrollView, View, Text } from "@tarojs/components"
 import Taro, { useReady } from "@tarojs/taro"
-import React, { useCallback, useState } from "react"
-import { ActionSheet, Button, Slider } from "@antmjs/vantui"
+import React, { useState } from "react"
+import { ActionSheet, Button, Stepper } from "@antmjs/vantui"
 
 type CurrentTypeDetailData = { detail: TypeDetailData.Detail, section: TypeDetailData.Section }
-type TypeSetStyleFnProperty = { objName: "global" | "text", property: string, idx: number, i: number }
-
-
 
 export default () => {
   const typefaceObj = {
-    "雅黑": "'Microsoft YaHei',PingFangSC-Regular,HelveticaNeue-Light,'Helvetica Neue Light',sans-serif",
-    "宋体": "PingFangSC-Regular,'-apple-system',Simsun",
-    "楷书": "Kaiti"
+    宋体: "SimSun",
+    正黑体: "Microsoft JhengHei",
+    雅黑: "'Microsoft YaHei',PingFangSC-Regular,HelveticaNeue-Light,'Helvetica Neue Light',sans-serif",
+    楷书: "Kaiti",
+    仿宋: "FangSong",
+    黑体: "SimHei"
   }
   const panelArr: Array<Array<string>> = [
-    ["雅黑", "宋体", "楷书"],
-    ["#000", "#DCCC9E", "#CFE1CF", "#D1E0E4", "#4B3535", "#CFCFCF", "#0E0F11"],
-    ["#FFF", "#1A73E8", "#B0D2E9", "#C66834", "#A4F019", "#CAD2D9", "#DF9538"]
+    ["雅黑", "正黑体", "宋体", "楷书", "仿宋", "黑体"],
+    ["#000", "#DCCC9E", "#CFE1CF", "#D1E0E4", "#4B3535", "#CFCFCF", "#FB6B84"],
+    ["#fff", "#1A73E8", "#2A382A", "#C66834", "#322D24", "#2E393D", "#DF9538"]
   ]
-  const [idxArr, setIdxArr] = useState<Array<any>>([0, 0, 0])
-  const [styleData, setStyleData] = useState<TypeDetailData.StyeData>({
-    globalStyle: {
-      color: '#000',
-      fontFamily: "'Microsoft YaHei',PingFangSC-Regular,HelveticaNeue-Light,'Helvetica Neue Light',sans-serif",
-      backgroundColor: "#FFF"
-    },
-    textStyle: {
-      fontSize: '18PX',
-      textIndent: "2em",
-      marginBottom: "20PX",
+  const init_obj = {
+    init_idxArr: [0, 20, 0, 20, 0, 0],
+    init_styleData: {
+      globalStyle: {
+        color: panelArr[1][0],
+        fontFamily: typefaceObj[panelArr[0][0]],
+        backgroundColor: panelArr[2][0]
+      },
+      textStyle: {
+        transition: "all 0.5s",
+        fontSize: '20PX',
+        textIndent: "2em",
+        marginBottom: "20PX",
+      }
     }
-  })
+  }
+  const [idxArr, setIdxArr] = useState<Array<any>>(init_obj.init_idxArr)
+  const [styleData, setStyleData] = useState<TypeDetailData.StyeData>(init_obj.init_styleData)
   const [detailData, setDetailData] = useState<CurrentTypeDetailData>({
     detail: {
       book_id: "",
@@ -51,7 +56,13 @@ export default () => {
   })
   const [isShow, setIsShow] = useState<boolean>(false)
   useReady(async () => {
-    const detail = Taro.getStorageSync<TypeDetailData.Detail>("detail")
+    const detail = Taro.getStorageSync<TypeDetailData.Detail>("detail") || {
+      book_id: "13329",
+      book_name: "异世灵武天下",
+      book_type_id: "13",
+      section_id: "3505153",
+      section_name: "第一章 人品问题"
+    }
     if (!detail) {
       return skip({
         url: 'pages/index',
@@ -76,23 +87,40 @@ export default () => {
     })
   })
 
-  const setStyleFn = useCallback(({ objName, property, idx, i }: TypeSetStyleFnProperty) => {
-    console.log(objName, property, idx, i)
+  const setStyleFn = ({ globalStyle, textStyle, idx, i }: TypeDetailData.StyeData & { idx: number, i: number }) => {
     idxArr[idx] = i
-    styleData[`${objName}Style`][property] = idx === 0 ? typefaceObj[panelArr[idx][i]] : panelArr[idx][i]
-    setStyleData(styleData)
-    console.log({ ...styleData })
+    setStyleData({ globalStyle, textStyle })
     setIdxArr([...idxArr])
-    console.log([...idxArr])
-  }, [])
+    console.log('哈哈')
+    Taro.setStorageSync(
+      'panelObj',
+      {
+        styleData,
+        idxArr
+      })
+    if (idx === 4 || idx === 5) {
+      Taro.setNavigationBarColor({
+        backgroundColor: panelArr[2][idxArr[5]],
+        frontColor: panelArr[1][idxArr[4]],
+        animation: {
+          duration: 500,
+          timingFunc: "easeIn"
+        }
+      })
+
+    }
+  }
 
   return (
     < ScrollView className="scroll-view" scrollY style={styleData.globalStyle}>
-      {idxArr.map(item => <Text>{item}</Text>)}
       <View className="scroll-view-title">{detailData.detail.section_name}</View>
-      <View className="scroll-view-content" onClick={throttle(() => setIsShow(true), 100)}>
-        {detailData.section.textArr.map((item, i) => <View style={styleData.textStyle} key={i}>{item}</View>)}
-      </View>
+      {
+        detailData.section.textArr.length > 0 ?
+          <View className="scroll-view-content" onClick={throttle(() => setIsShow(true), 100)}>
+            {detailData.section.textArr.map((item, i) => <View style={styleData.textStyle} key={i}>{item}</View>)}
+          </View>
+          : null
+      }
       <ActionSheet
         className="ActionSheet"
         show={isShow}
@@ -101,8 +129,8 @@ export default () => {
       >
         <View className="ActionSheet-content">
           <View className="ActionSheet-content-bgColor">
-            <Text style="font-size: 16PX;">文字类型:</Text>
-            <View className="ActionSheet-content-bgColor-c">
+            <Text style="width: 25%; font-size: 16PX;">文字类型:</Text>
+            <View className="ActionSheet-content-bgColor-c buttonStyle">
               {
                 panelArr[0].map((item, i) =>
                   <Button
@@ -110,7 +138,15 @@ export default () => {
                     style={`${i === idxArr[0] ? "border: 1px solid #1CBB9A" : ""}`}
                     size="small"
                     key={item}
-                    onClick={setStyleFn.bind(null, { objName: 'global', property: 'fontFamily', idx: 0, i })}
+                    onClick={() => setStyleFn({
+                      ...styleData,
+                      globalStyle: {
+                        ...styleData.globalStyle,
+                        fontFamily: typefaceObj[panelArr[0][i]]
+                      },
+                      idx: 0,
+                      i
+                    })}
                   >
                     {item}
                   </Button>
@@ -119,55 +155,138 @@ export default () => {
             </View>
           </View>
           <View className="ActionSheet-content-bgColor">
-            <Text style="font-size: 16PX; padding-right: 5%;">文字间距:</Text>
-            <Slider
+            <Text style="width: 25%; font-size: 16PX;">行间距:</Text>
+            <Stepper
               min={20}
-              max={60}
+              max={100}
               step={10}
-              style="width: 70%; height: 10PX; margin-right: 5%;"
-              renderButton={v => <View className="radius-view">{v}</View>}
+              value={idxArr[1]}
+              theme="round"
+              disableInput
+              style="width: 80%;"
+              buttonSize={50}
+              onChange={({ detail: v }) => {
+                setStyleFn({
+                  ...styleData,
+                  textStyle: {
+                    ...styleData.textStyle,
+                    marginBottom: `${v}PX`
+                  },
+                  idx: 1,
+                  i: +v
+                })
+              }}
             />
           </View>
           <View className="ActionSheet-content-bgColor">
-            <Text style="font-size: 16PX; padding-right: 5%;">字体大小:</Text>
-            <Slider
-              min={18}
-              max={48}
+            <Text style="width: 25%; font-size: 16PX;">文字间距:</Text>
+            <Stepper
+              min={0}
+              max={20}
+              step={1}
+              value={idxArr[2]}
+              theme="round"
+              disableInput
+              style="width: 80%;"
+              buttonSize={50}
+              onChange={({ detail: v }) => {
+                setStyleFn({
+                  ...styleData,
+                  textStyle: {
+                    ...styleData.textStyle,
+                    letterSpacing: `${v}PX`
+                  },
+                  idx: 2,
+                  i: +v
+                })
+              }}
+            />
+          </View>
+          <View className="ActionSheet-content-bgColor">
+            <Text style="width: 25%; font-size: 16PX;">字体大小:</Text>
+            <Stepper
+              min={20}
+              max={72}
               step={2}
-              style="width: 70%; height: 10PX; margin-right: 5%;"
-              renderButton={v => <View className="radius-view">{v}</View>}
+              value={idxArr[3]}
+              theme="round"
+              disableInput
+              style="width: 80%;"
+              buttonSize={50}
+              onChange={({ detail: v }) => {
+                setStyleFn({
+                  ...styleData,
+                  textStyle: {
+                    ...styleData.textStyle,
+                    fontSize: `${v}PX`
+                  },
+                  idx: 3,
+                  i: +v
+                })
+              }}
             />
           </View>
           <View className="ActionSheet-content-bgColor">
-            <Text style="font-size: 16PX;">文字颜色:</Text>
+            <Text style="width: 25%; font-size: 16PX;">文字颜色:</Text>
             <View className="ActionSheet-content-bgColor-c">
               {
                 panelArr[1].map((item, i) =>
                   <View
-                    className={`ActionSheet-content-bgColor-c-i ${i === idxArr[1] ? "selectend" : ""}`}
+                    className={`ActionSheet-content-bgColor-c-i ${i === idxArr[4] ? "selectend" : ""}`}
                     key={item}
                     style={{ backgroundColor: item }}
-                    onClick={() => setStyleFn({ objName: 'global', property: 'color', idx: 1, i })}
+                    onClick={() => setStyleFn({
+                      ...styleData,
+                      globalStyle: {
+                        ...styleData.globalStyle,
+                        color: panelArr[1][i]
+                      },
+                      idx: 4,
+                      i
+                    }
+                    )}
                   />
                 )
               }
             </View>
           </View>
           <View className="ActionSheet-content-bgColor">
-            <Text style="font-size: 16PX;">背景颜色:</Text>
+            <Text style="width: 25%; font-size: 16PX;">背景颜色:</Text>
             <View className="ActionSheet-content-bgColor-c">
               {
                 panelArr[2].map((item, i) =>
                   <View
-                    className={`ActionSheet-content-bgColor-c-i ${i === idxArr[2] ? "selectend" : ""}`}
+                    className={`ActionSheet-content-bgColor-c-i ${i === idxArr[5] ? "selectend" : ""}`}
                     key={item}
                     style={{ backgroundColor: item }}
+                    onClick={() => setStyleFn({
+                      ...styleData,
+                      globalStyle: {
+                        ...styleData.globalStyle,
+                        backgroundColor: panelArr[2][i]
+                      },
+                      idx: 5,
+                      i
+                    }
+                    )}
                   />
                 )
               }
             </View>
           </View>
         </View>
+        <Button
+          round
+          type="info"
+          size="large"
+          style="width: calc(100% - 20PX); height: 40PX; font-size: 20PX;margin: 10PX;"
+          onClick={() => {
+            setIdxArr(init_obj.init_idxArr)
+            setStyleData(init_obj.init_styleData)
+          }}
+        >
+          恢复
+        </Button>
       </ActionSheet>
     </ScrollView >
   )

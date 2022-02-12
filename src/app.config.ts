@@ -1,12 +1,12 @@
 export default {
   lazyCodeLoading: "requiredComponents", // 自基础库版本 2.11.1 起，小程序支持有选择地注入必要的代码，以降低小程序的启动时间和运行时内存。
   pages: [
+    "pages/index/detail/index",
     "pages/index/index",
     "pages/music/music",
     "pages/video/video",
     "pages/my/my",
-    "pages/index/book/index",
-    "pages/index/detail/index"
+    "pages/index/book/index"
   ],
   window: {
     backgroundTextStyle: "light",
