@@ -194,6 +194,20 @@ export namespace TypeDetailData {
     textStyle: CSSProperties;
     globalStyle: CSSProperties;
   }
+
+  export interface Coord {
+    /* 开始 X 坐标 */
+    startX: number,
+
+    /* 开始 Y 坐标 */
+    startY: number,
+
+    /* 结束 X 坐标 */
+    endX: number,
+
+    /* 结束 Y 坐标 */
+    endY: number
+  }
 }
 
 export * from "./req";

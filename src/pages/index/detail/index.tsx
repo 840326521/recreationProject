@@ -1,45 +1,59 @@
-import "./index.less"
-import { TypeDetailData } from "@/src_types"
-import { request, skip, throttle } from "@utils"
-import { ScrollView, View, Text } from "@tarojs/components"
-import Taro, { useReady } from "@tarojs/taro"
-import React, { useState } from "react"
-import { ActionSheet, Button, Stepper } from "@antmjs/vantui"
+import "./index.less";
+import { TypeDetailData } from "@/src_types";
+import { request, skip, throttle } from "@utils";
+import { ScrollView, View, Text } from "@tarojs/components";
+import Taro, { useReady } from "@tarojs/taro";
+import React, { useState } from "react";
+import { ActionSheet, Button, Stepper } from "@antmjs/vantui";
 
-type CurrentTypeDetailData = { detail: TypeDetailData.Detail, section: TypeDetailData.Section }
+type CurrentTypeDetailData = {
+  detail: TypeDetailData.Detail;
+  section: TypeDetailData.Section;
+};
+
+console.log("windiw:", navigator.userAgent.toLowerCase());
 
 export default () => {
+  const panelObj = Taro.getStorageSync<{
+    idxArr: Array<number>;
+    styleData: TypeDetailData.StyeData;
+  }>("panelObj");
   const typefaceObj = {
     宋体: "SimSun",
     正黑体: "Microsoft JhengHei",
-    雅黑: "'Microsoft YaHei',PingFangSC-Regular,HelveticaNeue-Light,'Helvetica Neue Light',sans-serif",
+    雅黑:
+      "'Microsoft YaHei',PingFangSC-Regular,HelveticaNeue-Light,'Helvetica Neue Light',sans-serif",
     楷书: "Kaiti",
     仿宋: "FangSong",
     黑体: "SimHei"
-  }
+  };
   const panelArr: Array<Array<string>> = [
     ["雅黑", "正黑体", "宋体", "楷书", "仿宋", "黑体"],
     ["#000", "#DCCC9E", "#CFE1CF", "#D1E0E4", "#4B3535", "#CFCFCF", "#FB6B84"],
     ["#fff", "#1A73E8", "#2A382A", "#C66834", "#322D24", "#2E393D", "#DF9538"]
-  ]
+  ];
   const init_obj = {
-    init_idxArr: [0, 20, 0, 20, 0, 0],
-    init_styleData: {
+    idxArr: [0, 20, 0, 20, 0, 0],
+    styleData: {
       globalStyle: {
+        ...(panelObj?.styleData.globalStyle || {}),
         color: panelArr[1][0],
         fontFamily: typefaceObj[panelArr[0][0]],
         backgroundColor: panelArr[2][0]
       },
       textStyle: {
+        ...(panelObj?.styleData.textStyle || {}),
         transition: "all 0.5s",
-        fontSize: '20PX',
+        fontSize: "20PX",
         textIndent: "2em",
-        marginBottom: "20PX",
+        marginBottom: "20PX"
       }
     }
-  }
-  const [idxArr, setIdxArr] = useState<Array<any>>(init_obj.init_idxArr)
-  const [styleData, setStyleData] = useState<TypeDetailData.StyeData>(init_obj.init_styleData)
+  };
+  const [idxArr, setIdxArr] = useState<Array<number>>(init_obj.idxArr);
+  const [styleData, setStyleData] = useState<TypeDetailData.StyeData>(
+    init_obj.styleData
+  );
   const [detailData, setDetailData] = useState<CurrentTypeDetailData>({
     detail: {
       book_id: "",
@@ -53,74 +67,96 @@ export default () => {
       textArr: [],
       next_section_id: ""
     }
-  })
-  const [isShow, setIsShow] = useState<boolean>(false)
+  });
+  const [isShow, setIsShow] = useState<boolean>(false);
+  const [coord, setCoord] = useState<TypeDetailData.Coord>({
+    startX: 0,
+    startY: 0,
+    endX: 0,
+    endY: 0
+  });
   useReady(async () => {
-    const detail = Taro.getStorageSync<TypeDetailData.Detail>("detail") || {
+    const detail: TypeDetailData.Detail = Taro.getStorageSync("detail") || {
       book_id: "13329",
       book_name: "异世灵武天下",
       book_type_id: "13",
       section_id: "3505153",
       section_name: "第一章 人品问题"
-    }
+    };
     if (!detail) {
       return skip({
-        url: 'pages/index',
-        way: 'navigateTo'
-      })
+        url: "pages/index",
+        way: "navigateTo"
+      });
     }
     const { data: section } = await request<TypeDetailData.Section>({
-      url: 'book/getBookSection',
-      method: 'post',
+      url: "book/getBookSection",
+      method: "post",
       data: {
         book_type_id: detail.book_type_id,
         book_id: detail.book_id,
         section_id: detail.section_id
       }
-    })
+    });
     setDetailData({
       section,
       detail
-    })
+    });
     Taro.setNavigationBarTitle({
       title: `《${detail.book_name}》  ${detail.section_name}`
-    })
-  })
+    });
+  });
 
-  const setStyleFn = ({ globalStyle, textStyle, idx, i }: TypeDetailData.StyeData & { idx: number, i: number }) => {
-    idxArr[idx] = i
-    setStyleData({ globalStyle, textStyle })
-    setIdxArr([...idxArr])
-    console.log('哈哈')
-    Taro.setStorageSync(
-      'panelObj',
-      {
-        styleData,
-        idxArr
-      })
-    if (idx === 4 || idx === 5) {
-      Taro.setNavigationBarColor({
-        backgroundColor: panelArr[2][idxArr[5]],
-        frontColor: panelArr[1][idxArr[4]],
-        animation: {
-          duration: 500,
-          timingFunc: "easeIn"
-        }
-      })
+  const setStyleFn = ({
+    globalStyle,
+    textStyle,
+    idx,
+    i
+  }: TypeDetailData.StyeData & { idx: number; i: number }) => {
+    const styleData = { globalStyle, textStyle };
+    console.log("styleData:", styleData);
+    idxArr[idx] = i;
+    setStyleData(styleData);
+    setIdxArr([...idxArr]);
+    Taro.setStorageSync("panelObj", {
+      styleData,
+      idxArr
+    });
+  };
 
-    }
-  }
+  // 滑动开始事件
+  const handlerTouchStart = e => {
+    console.log("开始e:", e);
+  };
+
+  // 滑动结束事件
+  const handlerTouchEnd = e => {
+    console.log("结束e:", e);
+  };
 
   return (
-    < ScrollView className="scroll-view" scrollY style={styleData.globalStyle}>
-      <View className="scroll-view-title">{detailData.detail.section_name}</View>
-      {
-        detailData.section.textArr.length > 0 ?
-          <View className="scroll-view-content" onClick={throttle(() => setIsShow(true), 100)}>
-            {detailData.section.textArr.map((item, i) => <View style={styleData.textStyle} key={i}>{item}</View>)}
-          </View>
-          : null
-      }
+    <ScrollView
+      className="scroll-view"
+      scrollY
+      style={styleData.globalStyle}
+      onTouchStart={handlerTouchStart}
+      onTouchEnd={handlerTouchEnd}
+    >
+      <View className="scroll-view-title">
+        {detailData.detail.section_name}
+      </View>
+      {detailData.section.textArr.length > 0 ? (
+        <View
+          className="scroll-view-content"
+          onClick={throttle(() => setIsShow(true), 100)}
+        >
+          {detailData.section.textArr.map((item, i) => (
+            <View style={styleData.textStyle} key={i}>
+              {item}
+            </View>
+          ))}
+        </View>
+      ) : null}
       <ActionSheet
         className="ActionSheet"
         show={isShow}
@@ -131,14 +167,16 @@ export default () => {
           <View className="ActionSheet-content-bgColor">
             <Text style="width: 25%; font-size: 16PX;">文字类型:</Text>
             <View className="ActionSheet-content-bgColor-c buttonStyle">
-              {
-                panelArr[0].map((item, i) =>
-                  <Button
-                    className="btn"
-                    style={`${i === idxArr[0] ? "border: 1px solid #1CBB9A" : ""}`}
-                    size="small"
-                    key={item}
-                    onClick={() => setStyleFn({
+              {panelArr[0].map((item, i) => (
+                <Button
+                  className="btn"
+                  style={`${
+                    i === idxArr[0] ? "border: 1px solid #1CBB9A" : ""
+                  }`}
+                  size="small"
+                  key={item}
+                  onClick={() =>
+                    setStyleFn({
                       ...styleData,
                       globalStyle: {
                         ...styleData.globalStyle,
@@ -146,12 +184,12 @@ export default () => {
                       },
                       idx: 0,
                       i
-                    })}
-                  >
-                    {item}
-                  </Button>
-                )
-              }
+                    })
+                  }
+                >
+                  {item}
+                </Button>
+              ))}
             </View>
           </View>
           <View className="ActionSheet-content-bgColor">
@@ -174,7 +212,7 @@ export default () => {
                   },
                   idx: 1,
                   i: +v
-                })
+                });
               }}
             />
           </View>
@@ -198,7 +236,7 @@ export default () => {
                   },
                   idx: 2,
                   i: +v
-                })
+                });
               }}
             />
           </View>
@@ -222,20 +260,22 @@ export default () => {
                   },
                   idx: 3,
                   i: +v
-                })
+                });
               }}
             />
           </View>
           <View className="ActionSheet-content-bgColor">
             <Text style="width: 25%; font-size: 16PX;">文字颜色:</Text>
             <View className="ActionSheet-content-bgColor-c">
-              {
-                panelArr[1].map((item, i) =>
-                  <View
-                    className={`ActionSheet-content-bgColor-c-i ${i === idxArr[4] ? "selectend" : ""}`}
-                    key={item}
-                    style={{ backgroundColor: item }}
-                    onClick={() => setStyleFn({
+              {panelArr[1].map((item, i) => (
+                <View
+                  className={`ActionSheet-content-bgColor-c-i ${
+                    i === idxArr[4] ? "selectend" : ""
+                  }`}
+                  key={item}
+                  style={{ backgroundColor: item }}
+                  onClick={() =>
+                    setStyleFn({
                       ...styleData,
                       globalStyle: {
                         ...styleData.globalStyle,
@@ -243,23 +283,24 @@ export default () => {
                       },
                       idx: 4,
                       i
-                    }
-                    )}
-                  />
-                )
-              }
+                    })
+                  }
+                />
+              ))}
             </View>
           </View>
           <View className="ActionSheet-content-bgColor">
             <Text style="width: 25%; font-size: 16PX;">背景颜色:</Text>
             <View className="ActionSheet-content-bgColor-c">
-              {
-                panelArr[2].map((item, i) =>
-                  <View
-                    className={`ActionSheet-content-bgColor-c-i ${i === idxArr[5] ? "selectend" : ""}`}
-                    key={item}
-                    style={{ backgroundColor: item }}
-                    onClick={() => setStyleFn({
+              {panelArr[2].map((item, i) => (
+                <View
+                  className={`ActionSheet-content-bgColor-c-i ${
+                    i === idxArr[5] ? "selectend" : ""
+                  }`}
+                  key={item}
+                  style={{ backgroundColor: item }}
+                  onClick={() =>
+                    setStyleFn({
                       ...styleData,
                       globalStyle: {
                         ...styleData.globalStyle,
@@ -267,11 +308,10 @@ export default () => {
                       },
                       idx: 5,
                       i
-                    }
-                    )}
-                  />
-                )
-              }
+                    })
+                  }
+                />
+              ))}
             </View>
           </View>
         </View>
@@ -281,13 +321,13 @@ export default () => {
           size="large"
           style="width: calc(100% - 20PX); height: 40PX; font-size: 20PX;margin: 10PX;"
           onClick={() => {
-            setIdxArr(init_obj.init_idxArr)
-            setStyleData(init_obj.init_styleData)
+            setIdxArr(init_obj.idxArr);
+            setStyleData(init_obj.styleData);
           }}
         >
           恢复
         </Button>
       </ActionSheet>
-    </ScrollView >
-  )
-}
+    </ScrollView>
+  );
+};

@@ -1,7 +1,10 @@
+@import (reference) "@/styles/global/global.less";
+
 .scroll-view {
   height: 100vh;
   position: fixed;
   transition: all 0.5s;
+  .roll(block);
   .van-overlay {
     position: fixed;
     top: 0;
@@ -28,6 +31,7 @@
     padding-bottom: 20PX;
     background-color: #292a2d;
     .ActionSheet-content {
+      .roll(block, #1A355B);
       height: 30vh;
       overflow: auto;
       padding: 0 5%;
