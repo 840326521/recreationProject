@@ -1,4 +1,5 @@
 module.exports = {
+    "settings": { "react": { "version": "detect" } },
     "env": {
         "es6": true,
         "node": true

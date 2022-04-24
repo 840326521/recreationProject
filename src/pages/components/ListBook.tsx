@@ -1,20 +1,12 @@
-import React from "react"
-import { TypeData, TypeItem } from "@src_types";
-import { View, Image, Text, Button } from "@tarojs/components"
+import React from "react";
+import { PropsType } from "@src_types";
+import { View, Image, Text, Button } from "@tarojs/components";
 import { Divider } from "@antmjs/vantui";
-import { styled } from 'linaria/react';
+import { styled } from "linaria/react";
 import config from "@src_config";
 
-type TypeProps = {
-  isAll: boolean,
-  data: TypeData,
-  item: TypeItem,
-  setData: Function
-  skip?: Function,
-}
-
-export default (props: TypeProps) => {
-  const { item, skip, setData, data, isAll } = props
+export default (props: PropsType.PagesPorpsType.TypeProps) => {
+  const { item, skip, setData, data, isAll } = props;
   const {
     book_type,
     book_img,
@@ -26,18 +18,16 @@ export default (props: TypeProps) => {
 
   return (
     <StyledView
-      style={`${!isAll ? `background-image: url(${config.url + book_img}); color: white;` : ""}`}
+      style={`${
+        !isAll
+          ? `background-image: url(${config.url + book_img}); color: white;`
+          : ""
+      }`}
     >
       {!isAll && <View className="swiper-view-shade" />}
       <View className="swiper-view-conent">
-        <Image
-          className="swiper-view-img"
-          src={config.url + book_img}
-        />
-        <View
-          className="swiper-view-content"
-          onClick={skip?.bind(null)}
-        >
+        <Image className="swiper-view-img" src={config.url + book_img} />
+        <View className="swiper-view-content" onClick={skip?.bind(null)}>
           <View className="swiper-view-content-item">
             <Text className="swiper-view-content-item-title">小说名：</Text>
             <Text>《{book_name}》</Text>
@@ -66,42 +56,43 @@ export default (props: TypeProps) => {
             简介
           </Divider>
           <View
-            className='swiper-view-omit'
-            style={`${isAll ? 'padding: 0 15PX;text-indent: 2.2em;' : ''}`}
-          // dangerouslySetInnerHTML={{ __html: book_intro }}
+            className="swiper-view-omit"
+            style={`${isAll ? "padding: 0 15PX;text-indent: 2.2em;" : ""}`}
+            // dangerouslySetInnerHTML={{ __html: book_intro }}
           >
             {book_intro}
           </View>
-          {book_intro.length > 20 &&
+          {book_intro.length > 20 && (
             <Button
               size="mini"
               plain={true}
               className="swiper-view-btn"
-              style={`color: ${!isAll ? 'white' : 'black'}`}
+              style={`color: ${!isAll ? "white" : "black"}`}
               onClick={setData?.bind(null, { ...data, isShow: true })}
             >
               查看简介
-            </Button>}
+            </Button>
+          )}
         </View>
       )}
     </StyledView>
-  )
-}
+  );
+};
 
 const StyledView = styled(View)`
-  height: 240PX;
+  height: 240px;
   position: relative;
   background-repeat: no-repeat;
   background-size: cover;
-  font-size: 16PX;
+  font-size: 16px;
   .swiper-view-shade {
     width: 100%;
     height: 105%;
     background-color: red;
     position: absolute;
-    top: -10PX;
+    top: -10px;
     z-index: 0;
-    backdrop-filter: blur(4PX);
+    backdrop-filter: blur(4px);
     background-color: rgba(40, 44, 52, 0.5);
   }
   .swiper-view-conent {
@@ -128,9 +119,9 @@ const StyledView = styled(View)`
         width: 100%;
         display: inherit;
         .swiper-view-content-item-title {
-          width: 80PX;
+          width: 80px;
           text-align: right;
-          margin-right: 5PX;
+          margin-right: 5px;
         }
       }
     }
@@ -139,10 +130,10 @@ const StyledView = styled(View)`
     width: 100%;
     height: 25%;
     position: absolute;
-    bottom: 60PX;
+    bottom: 60px;
     z-index: 1;
     .swiper-view-omit {
-      text-indent: 40PX;
+      text-indent: 40px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -152,4 +143,4 @@ const StyledView = styled(View)`
       z-index: 100;
     }
   }
-`
+`;

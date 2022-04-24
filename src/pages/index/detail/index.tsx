@@ -3,7 +3,8 @@ import { TypeDetailData } from "@/src_types";
 import { request, skip, throttle } from "@utils";
 import { ScrollView, View, Text } from "@tarojs/components";
 import Taro, { useReady } from "@tarojs/taro";
-import React, { useState } from "react";
+import { Menus } from "@p_c";
+import React, { useRef, useState } from "react";
 import { ActionSheet, Button, Stepper } from "@antmjs/vantui";
 
 type CurrentTypeDetailData = {
@@ -11,9 +12,8 @@ type CurrentTypeDetailData = {
   section: TypeDetailData.Section;
 };
 
-console.log("windiw:", navigator.userAgent.toLowerCase());
-
 export default () => {
+  const ScrollViewRef = useRef();
   const panelObj = Taro.getStorageSync<{
     idxArr: Array<number>;
     styleData: TypeDetailData.StyeData;
@@ -69,12 +69,6 @@ export default () => {
     }
   });
   const [isShow, setIsShow] = useState<boolean>(false);
-  const [coord, setCoord] = useState<TypeDetailData.Coord>({
-    startX: 0,
-    startY: 0,
-    endX: 0,
-    endY: 0
-  });
   useReady(async () => {
     const detail: TypeDetailData.Detail = Taro.getStorageSync("detail") || {
       book_id: "13329",
@@ -114,7 +108,6 @@ export default () => {
     i
   }: TypeDetailData.StyeData & { idx: number; i: number }) => {
     const styleData = { globalStyle, textStyle };
-    console.log("styleData:", styleData);
     idxArr[idx] = i;
     setStyleData(styleData);
     setIdxArr([...idxArr]);
@@ -124,24 +117,16 @@ export default () => {
     });
   };
 
-  // 滑动开始事件
-  const handlerTouchStart = e => {
-    console.log("开始e:", e);
-  };
-
-  // 滑动结束事件
-  const handlerTouchEnd = e => {
-    console.log("结束e:", e);
-  };
-
   return (
     <ScrollView
       className="scroll-view"
       scrollY
       style={styleData.globalStyle}
-      onTouchStart={handlerTouchStart}
-      onTouchEnd={handlerTouchEnd}
+      ref={ScrollViewRef}
     >
+      <Menus title="我是传过去的title">
+        <div></div>
+      </Menus>
       <View className="scroll-view-title">
         {detailData.detail.section_name}
       </View>
@@ -160,7 +145,7 @@ export default () => {
       <ActionSheet
         className="ActionSheet"
         show={isShow}
-        title="样式设置面板"
+        title="样式设置面板1"
         onClose={throttle(() => setIsShow(false), 100)}
       >
         <View className="ActionSheet-content">

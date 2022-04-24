@@ -1,3 +1,4 @@
+import "./index.less";
 import { ListBook, Model } from "@p_c";
 import srcConfig from "@src_config";
 import { TypeBookSection, TypeData, TypeItem } from "@src_types";
@@ -5,7 +6,6 @@ import { isType, request, skip, TaroToast } from "@utils";
 import { ScrollView, View } from "@tarojs/components";
 import Taro from "@tarojs/taro";
 import React, { Component } from "react";
-import "./index.less";
 import { Divider } from "@antmjs/vantui";
 import { Tool } from "@p_c";
 

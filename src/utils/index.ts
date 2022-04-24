@@ -2,6 +2,10 @@ import { TypeSkip } from "@/src_types";
 import Taro from "@tarojs/taro";
 import { isType } from "./styleStringTransformObject";
 import config from "@src_config";
+
+const isWeb = config.globalData.isWeb;
+const isWeapp = config.globalData.isWeapp;
+
 export const numberFn = (num: string): string => {
   if (num.length === 0) return "";
   num = String((parseInt(num) * 2 ** 10) / 2);
@@ -76,6 +80,33 @@ export const TaroToast = ({
     duration,
     fail,
     success
+  });
+};
+
+export const getDom = <T extends HTMLDivElement>({
+  name = ".title-text",
+  isFirst = true,
+  isCoord = false
+}: {
+  name: string;
+  isFirst?: boolean;
+  isCoord?: boolean;
+}) => {
+  return new Promise<T | null>(resolve => {
+    if (isWeb) {
+      resolve(document.querySelector<T>(name) as T);
+    } else if (isWeapp) {
+      const query = Taro.createSelectorQuery()
+        [`select${isFirst ? "" : "All"}`](name)
+        .boundingClientRect();
+      isCoord
+        ? query
+            .selectViewport()
+            .scrollOffset()
+            .exec(res => resolve(res[0]))
+        : query.exec(res => resolve(res[0]));
+    }
+    resolve(null)
   });
 };
 

@@ -34,6 +34,9 @@ const config = {
     },
     framework: 'react',
     mini: {
+        miniCssExtractPluginOption: {
+            ignoreOrder: true,
+        },
         webpackChain(chain, webpack) {
             // linaria/loader 选项详见 https://github.com/callstack/linaria/blob/master/docs/BUNDLERS_INTEGRATION.md#webpack
             chain.module

@@ -1,5 +1,5 @@
-import React, { useRef, useState } from "react";
 import "./index.less";
+import React, { useRef, useState } from "react";
 import {
   Swiper,
   SwiperItem,
