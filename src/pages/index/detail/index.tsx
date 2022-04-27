@@ -36,13 +36,13 @@ export default () => {
     idxArr: [0, 20, 0, 20, 0, 0],
     styleData: {
       globalStyle: {
-        ...(panelObj?.styleData.globalStyle || {}),
+        ...(panelObj?.styleData?.globalStyle || {}),
         color: panelArr[1][0],
         fontFamily: typefaceObj[panelArr[0][0]],
         backgroundColor: panelArr[2][0]
       },
       textStyle: {
-        ...(panelObj?.styleData.textStyle || {}),
+        ...(panelObj?.styleData?.textStyle || {}),
         transition: "all 0.5s",
         fontSize: "20PX",
         textIndent: "2em",
@@ -125,7 +125,7 @@ export default () => {
       ref={ScrollViewRef}
     >
       <Menus title="我是传过去的title">
-        <div></div>
+        <View>哈哈</View>
       </Menus>
       <View className="scroll-view-title">
         {detailData.detail.section_name}
@@ -145,7 +145,7 @@ export default () => {
       <ActionSheet
         className="ActionSheet"
         show={isShow}
-        title="样式设置面板1"
+        title="样式设置面板"
         onClose={throttle(() => setIsShow(false), 100)}
       >
         <View className="ActionSheet-content">

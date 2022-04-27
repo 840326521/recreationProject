@@ -94,19 +94,20 @@ export const getDom = <T extends HTMLDivElement>({
 }) => {
   return new Promise<T | null>(resolve => {
     if (isWeb) {
-      resolve(document.querySelector<T>(name) as T);
+      return resolve(document.querySelector<T>(name) as T);
     } else if (isWeapp) {
       const query = Taro.createSelectorQuery()
         [`select${isFirst ? "" : "All"}`](name)
         .boundingClientRect();
-      isCoord
+      query.exec(res => console.log("res_102:", res[0]));
+      return isCoord
         ? query
             .selectViewport()
             .scrollOffset()
             .exec(res => resolve(res[0]))
         : query.exec(res => resolve(res[0]));
     }
-    resolve(null)
+    resolve(null);
   });
 };
 
